@@ -253,7 +253,7 @@ func (s *SmartContract) query(APIstub shim.ChaincodeStubInterface, args []string
     if bArrayMemberAlreadyWritten == true {
       buffer.WriteString(",")
     }
-    fmt.Println(string(Marshal(queryResponse)))
+
     buffer.WriteString(string(queryResponse.Value))
     bArrayMemberAlreadyWritten = true
   }
