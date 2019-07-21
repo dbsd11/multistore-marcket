@@ -1,4 +1,5 @@
 import fetch from '@/config/fetch'
+import mychannel_v0 from '@/config/mychannel-v0'
 
 /**
  * 登陆
@@ -226,3 +227,7 @@ export const getAddressById = address_id => fetch('/v1/addresse/' + address_id);
  */
 
 export const getUserCity = () => fetch('/v1/user/city/count');
+
+export const getGoodsList = (page) => {
+
+}

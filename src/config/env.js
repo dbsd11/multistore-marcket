@@ -9,6 +9,11 @@
 let baseUrl = ''; 
 let routerMode = 'hash';
 let baseImgPath;
+let channelName = 'mychannel';
+let peerGrpcUrl = 'grpc://119.3.167.139:7051';
+let peerGrpcUrl2 = 'grpc://119.3.167.139:7053';
+let orderrGrpcUrl = 'grpc://119.3.167.139:7050';
+let caUrl = 'http://119.3.167.139:7054';
 
 if (process.env.NODE_ENV == 'development') {
 	baseUrl = '';
