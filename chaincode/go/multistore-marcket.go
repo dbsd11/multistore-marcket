@@ -202,7 +202,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
     }
     //2.下调库存量最大的商品价格
     maxInvetoryGoods.Price -= reduceTotalPrice / float64(maxInvetoryGoods.Inventory)
-    maxInvetoryGoods.Price = strconv.ParseFloat(fmt.Sprintf("%.2f", maxInvetoryGoods.Price), 64)
+    maxInvetoryGoods.Price = 
     APIstub.PutState(maxInvetoryGoods.Id, Marshal(maxInvetoryGoods))
   }).Catch(func(e try.E) {
     fmt.Println(e)
@@ -315,6 +315,14 @@ func Marshal(v interface{}) []byte {
     return []byte{}
   } else {
     return vBytes
+  }
+}
+
+func float64Price(price float64) float64 {
+  if priceFloat64, error:= strconv.ParseFloat(fmt.Sprintf("%.2f", maxInvetoryGoods.Price), 64);error != nil{
+    return nil
+  } else {
+    return priceFloat64
   }
 }
 
