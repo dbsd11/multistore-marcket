@@ -5,12 +5,12 @@
             <el-col :span="14" :offset="4">
                 <header class="form_header">发起交易</header>
                 <el-form label-position="left" label-width="10%">
-                    <el-form-item label="顾客号" prop="customerNo">
+                    <el-form-item label="顾客号">
                         <el-input v-model="customerNo" :maxlength="20"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品名称" prop="selectGoods">
-                            <el-select v-model="selectGoods" placeholder="输入商品名称/商品码进行检索" filterable remote reserve-keyword :remote-method="(queryString)=>{
-                                selectGoodsFilter(queryString, allSelectList);
+                    <el-form-item label="商品名称">
+                            <el-select v-model="goodsCode" placeholder="输入商品名称/商品码进行检索" filterable remote reserve-keyword :remote-method="(queryString)=>{
+                                return selectGoodsFilter(queryString, allSelectList);
                             }">
                                     <el-option
                                             v-for="item in selectGoods"
@@ -20,9 +20,9 @@
                                     </el-option>
                             </el-select>
                         </el-form-item>
-                    <el-form-item label="市场名称" prop="selectMarckets">
-                        <el-select v-model="selectMarckets" placeholder="输入市场名称进行检索" filterable remote reserve-keyword :remote-method="(queryString)=>{
-                            selectMacketsFilter(queryString, allSelectList);
+                    <el-form-item label="市场名称">
+                        <el-select v-model="marcketCode" placeholder="输入市场名称进行检索" filterable remote reserve-keyword :remote-method="(queryString)=>{
+                            return selectMarcketsFilter(queryString, allSelectList);
                         }">
                                 <el-option
                                         v-for="item in selectMarckets"
@@ -58,14 +58,16 @@
                 goodsName: "",
                 goodsCode: "",
                 marcketName: "",
+                marcketCode: "",
                 selectGoods: [{
                     label: '棉衣',
                     value: 'my01'
                 }],
                 selectMarckets: [{
                     label: '华北01',
-                    value:'sc01'
+                    value:'scn01'
                 }],
+                allSelectList:[],
                 dialogFormVisible:false
             }
         },
@@ -76,24 +78,23 @@
             this.initData()
         },
         methods: {
-            async initData(){},
+            async initData(){
+                this.customerNo = "rand"+this.randomString(10)
+            },
             async getSelectGoods(goodsNameOrCodeLike){},
             selectGoodsFilter(queryString, allSelectList){
-                return selectGoods
             },
             selectMarcketsFilter(queryString, allSelectList){
-                return selectMarckets
             },
             async initiateTradeData(){
                 try{
                     var tradeResult = await initiateTrade({
-                        customerNo: this.customerNo || "cus01",
-                        goodsName: this.goodsName || "棉衣",
-                        goodsCode: this.goodsCode || "my01",
-                        marcketName: this.marcketName || "华北01"
+                        customerNo: this.customerNo,
+                        goodsName: this.selectGoods.filter(select => select.value==this.goodsCode)[0].label,
+                        goodsCode: this.goodsCode,
+                        marcketName: this.selectMarckets.filter(select => select.value==this.marcketCode)[0].label,
+                        tradeTime: this.getCurDateStr('yyyy-MM-dd HH:mm:ss')
                     })
-
-                    console.info(tradeResult)
                         
                     if(!tradeResult || tradeResult.error){
                         this.$message({
@@ -115,6 +116,40 @@
                         message: '发起交易失败, 请联系系统管理员'
                     });
                 }
+            },
+
+            getCurDateStr(fmt){
+                var date = new Date()
+                var o = {
+                    "M+": date.getMonth() + 1, //月份 
+                    "d+": date.getDate(), //日 
+                    "H+": date.getHours(), //小时 
+                    "m+": date.getMinutes(), //分 
+                    "s+": date.getSeconds(), //秒 
+                    "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+                    "S": date.getMilliseconds() //毫秒 
+                };
+
+                if (/(y+)/.test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+                }
+                for (var k in o){
+                    if (new RegExp("(" + k + ")").test(fmt)){
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    }
+                }
+                
+                return fmt
+            },
+            randomString(len) {
+            　　len = len || 32;
+            　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+            　　var maxPos = $chars.length;
+            　　var pwd = '';
+            　　for (var i = 0; i < len; i++) {
+            　　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+            　　}
+            　　return pwd;
             }
         }
     } 

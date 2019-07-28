@@ -55,6 +55,10 @@ export default new Router({
           path: '/initiateTrade',
           component: initiateTrade,
           meta: [],
+        },{
+          path: '/explain',
+          component: "简单兴趣学习",
+          meta: [],
         }
       ]
     }
