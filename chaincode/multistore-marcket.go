@@ -109,6 +109,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
     return s.initiateTrade(APIstub, args)
   } else if function == "query" {
     return s.query(APIstub, args)
+  } else if function == "demoClean" {
+    return s.demoClean(APIstub, args)
   }
 
   return shim.Error("Invalid Smart Contract function name.")
@@ -171,7 +173,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
   }()
 
   try.This(func() {
-    queryGoodsResponse := s.query(APIstub, []string{"query", "goods"})
+    queryGoodsResponse := s.query(APIstub, []string{"goods"})
     var goodsList []Goods
     json.Unmarshal(queryGoodsResponse.GetPayload(), goods)
 
@@ -261,6 +263,21 @@ func (s *SmartContract) query(APIstub shim.ChaincodeStubInterface, args []string
   return shim.Success(buffer.Bytes())
 }
 
+func (s *SmartContract) demoClean(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+  if (len(args) == 0) {
+    return shim.Error("Denied")
+  }
+  if (strings.Compare(args[0], string(time.Now().Unix() / 60)) != 0) {
+    return shim.Error("Denied")
+  }
+
+  if error := APIstub.DelState(args[1]); error != nil {
+    return shim.Error("Denied")
+  }
+
+  return shim.Success(nil)
+}
+
 func getAndIncrId(APIstub shim.ChaincodeStubInterface, flag string) string {
   defer func() {
     fmt.Println("getAndIncrId failed flag:" + flag)
@@ -273,7 +290,7 @@ func getAndIncrId(APIstub shim.ChaincodeStubInterface, flag string) string {
   var globalId int = 0
   try.This(func() {
     if globalIdBytes, error := APIstub.GetState(globalIdKey); error == nil {
-      globalId, _ := strconv.Atoi(string(globalIdBytes))
+      globalId, _ = strconv.Atoi(string(globalIdBytes))
       globalId += 1
     }
   }).Catch(func(e try.E) {
