@@ -61,8 +61,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
+      chunks:['app'],
       filename: 'index.html',
       template: 'index.html',
+      inject: true
+    }),
+
+    new HtmlWebpackPlugin({
+      chunks:['chaincode'],
       inject: true
     }),
 
