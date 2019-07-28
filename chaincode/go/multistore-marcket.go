@@ -189,6 +189,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
       if strings.Compare(goodsThis.Id, goods.Id) == 0 {
         increasePrice := goodsThis.Price * (float64(100000 - goodsThis.Inventory) / 100000.0)
         goodsThis.Price += increasePrice
+        goodsThis.Price = strconv.ParseFloat(fmt.Sprintf("%.2f", goodsThis.Price), 64)
         APIstub.PutState(goodsThis.Id, Marshal(goodsThis))
         reduceTotalPrice = increasePrice * float64(goodsThis.Inventory);
         continue
@@ -201,6 +202,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
     }
     //2.下调库存量最大的商品价格
     maxInvetoryGoods.Price -= reduceTotalPrice / float64(maxInvetoryGoods.Inventory)
+    maxInvetoryGoods.Price = strconv.ParseFloat(fmt.Sprintf("%.2f", maxInvetoryGoods.Price), 64)
     APIstub.PutState(maxInvetoryGoods.Id, Marshal(maxInvetoryGoods))
   }).Catch(func(e try.E) {
     fmt.Println(e)

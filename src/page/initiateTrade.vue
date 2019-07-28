@@ -56,6 +56,7 @@
             return {
                 customerNo: "",
                 goodsName: "",
+                goodsCode: "",
                 marcketName: "",
                 selectGoods: [{
                     label: '棉衣',
@@ -88,6 +89,7 @@
                     var tradeResult = await initiateTrade({
                         customerNo: this.customerNo || "cus01",
                         goodsName: this.goodsName || "棉衣",
+                        goodsCode: this.goodsCode || "my01",
                         marcketName: this.marcketName || "华北01"
                     })
 
