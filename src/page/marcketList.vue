@@ -61,13 +61,15 @@
 </template>
 
 <script>
-	import headTop from '../components/headTop'
+    import headTop from '../components/headTop'
+    import { getMarcketList } from '@/api/getData'
 
     export default{
         data(){
             return {
                 count: 0,
                 currentPage: 1,
+                currentPageSize: 20,
                 tableData:[],
                 selectTable: {},
                 expendRow: []
@@ -80,15 +82,46 @@
             this.initData()
         },
         methods: {
-            async initData(){},
-            async getGoods(){},
+            async initData(){
+                try{
+                    this.count = 100000
+                    this.getMarchetList()
+                }catch(err){
+                    console.log('获取数据失败', err);
+                }
+            },
+            async getMarchetList(){
+                try{
+                    marcketList = getMarcketList(null, {
+                        page: this.currentPage,
+                        pageSize: this.currentPageSize
+                    })
+
+                    this.tableData = [];
+                    marcketList.forEach(item => {
+                        const marcketItem = {
+                            name: item.name,
+                            code: item.code,
+                            address: item.address,
+                            customerNum: item.customerNum,
+                            tradeAmount: item.tradeAmount,
+                            tag: item.tag,
+                            star: item.star
+                        }
+                        this.tableData.push(marcketItem)
+                    })
+                }catch(err){
+                    console.log('获取数据失败', err);
+                }
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.currentPageSize = val
             },
             handleCurrentChange(val) {
                 this.currentPage = val;
                 this.offset = (val - 1)*this.limit;
-                this.getFoods()
+                this.getMarchetList()
             },
             expand(row, status){
             	if (status) {

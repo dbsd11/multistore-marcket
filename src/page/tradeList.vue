@@ -56,13 +56,15 @@
 </template>
 
 <script>
-	import headTop from '../components/headTop'
+    import headTop from '../components/headTop'
+    import { getTradeList } from '@/api/getData'
 
     export default{
         data(){
             return {
                 count: 0,
                 currentPage: 1,
+                currentPageSize: 20,
                 tableData:[],
                 selectTable: {},
                 expendRow: []
@@ -75,15 +77,41 @@
             this.initData()
         },
         methods: {
-            async initData(){},
-            async getGoods(){},
+            async initData(){
+                try{
+                    this.count = 100000
+                    this.getTradeListData()
+                }catch(err){
+                    console.log('获取数据失败', err);
+                }
+            },
+            async getTradeListData(){
+                tradeList = getTradeList(null, {
+                        page: this.currentPage,
+                        pageSize: this.currentPageSize
+                    })
+
+                this.tableData = [];
+                tradeList.forEach(item => {
+                    const tradeItem = {
+                        goodsName: item.goodsName,
+                        goodsCode: item.goodsCode,
+                        marcketName: item.marcketName,
+                        customerNo: item.customerNo,
+                        tradePrice: item.tradePrice,
+                        tradeTime: item.tradeTime
+                    }
+                    this.tableData.push(tradeItem)
+                })
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.currentPageSize = val
             },
             handleCurrentChange(val) {
                 this.currentPage = val;
                 this.offset = (val - 1)*this.limit;
-                this.getFoods()
+                this.getTradeListData()
             },
             expand(row, status){
             	if (status) {
