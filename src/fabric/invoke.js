@@ -44,8 +44,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	fabric_client.setCryptoSuite(crypto_suite);
 })
 
-function invokeAsync(userId, chaincodeId, fcn, args){
-	Promise.resolve(()=>{
+async function invokeAsync(userId, chaincodeId, fcn, args){
+	return Promise.resolve(()=>{
 		var userFromStore = fabric_client.getUserContext(userId, true);
 		if (user_from_store && user_from_store.isEnrolled()) {
 			console.log('Successfully loaded %s from persistence', userId);
@@ -163,4 +163,8 @@ function invokeAsync(userId, chaincodeId, fcn, args){
 	}).catch((err) => {
 		console.error('Failed to invoke successfully :: ' + err);
 	});
+}
+
+module.exports = {
+	invokeAsync: invokeAsync
 }

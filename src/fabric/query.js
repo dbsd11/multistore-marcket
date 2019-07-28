@@ -47,8 +47,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	return fabric_client.getUserContext('user2', true);
 })
 
-function queryAsync(userId, chaincodeId, fcn, args){
-	Promise.resolve(()=>{
+async function queryAsync(userId, chaincodeId, fcn, args){
+	return Promise.resolve(()=>{
 		var userFromStore = fabric_client.getUserContext(userId, true);
 		if (user_from_store && user_from_store.isEnrolled()) {
 			console.log('Successfully loaded %s from persistence', userId);
@@ -80,4 +80,8 @@ function queryAsync(userId, chaincodeId, fcn, args){
 		console.error('Failed to query successfully :: ' + err);
 	});
 
+}
+
+module.exports = {
+	queryAsync: queryAsync
 }

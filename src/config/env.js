@@ -14,6 +14,7 @@ let peerGrpcUrl = 'grpc://119.3.167.139:7051';
 let peerGrpcUrl2 = 'grpc://119.3.167.139:7053';
 let orderrGrpcUrl = 'grpc://119.3.167.139:7050';
 let caUrl = 'http://119.3.167.139:7054';
+let chaincodeId = "multistore-marcket:2.8"
 
 if (process.env.NODE_ENV == 'development') {
 	baseUrl = '';

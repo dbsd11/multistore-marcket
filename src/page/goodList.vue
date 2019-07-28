@@ -47,7 +47,7 @@
                 <el-table-column label="商品码" prop="code"></el-table-column>
                 <el-table-column label="商品类型" prop="type"></el-table-column>
                 <el-table-column label="商品图片" prop="smallUrl"></el-table-column>
-                <el-table-column label="商品价格" prop="price"></el-table-column>
+                <el-table-column label="商品价格(单位元)" prop="price"></el-table-column>
                 <el-table-column label="所属集市" prop="marcketName"></el-table-column>
                 <el-table-column label="库存剩余" prop="inventory"></el-table-column>
                 <el-table-column label="商品标签" prop="tag"></el-table-column>
@@ -69,13 +69,15 @@
 </template>
 
 <script>
-	import headTop from '../components/headTop'
+    import headTop from '../components/headTop'
+    import { getGoodsList } from '@/api/getData'
 
     export default{
         data(){
             return {
                 count: 0,
                 currentPage: 1,
+                currentPageSize: 20,
                 tableData:[],
                 selectTable: {},
                 expendRow: []
@@ -88,10 +90,43 @@
             this.initData()
         },
         methods: {
-            async initData(){},
-            async getGoods(){},
+            async initData(){
+                try{
+                    this.count = 100000
+                    this.getGoods()
+                }catch(err){
+                    console.log('获取数据失败', err);
+                }
+            },
+            async getGoods(){
+                try{
+                    goodsList = getGoodsList(null, {
+                        page: this.currentPage,
+                        pageSize: this.currentPageSize
+                    })
+
+                    this.tableData = [];
+                    goodsList.forEach(item => {
+                        const goodsItem = {
+                            name: item.name,
+                            code: item.code,
+                            type: item.type,
+                            smallUrl: item.smallUrl,
+                            price: item.price,
+                            marcketName: item.marcketName,
+                            inventory: item.inventory,
+                            tag: item.tag,
+                            star: item.star
+                        }
+                        this.tableData.push(goodsItem)
+                    })
+                }catch(err){
+                    console.log('获取数据失败', err);
+                }
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.currentPageSize = val
             },
             handleCurrentChange(val) {
                 this.currentPage = val;

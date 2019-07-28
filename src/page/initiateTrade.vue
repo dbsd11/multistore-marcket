@@ -56,7 +56,7 @@
             async initData(){},
             async getSelectGoods(goodsNameOrCodeLike){},
             selectGoodsFilter(queryString, allSelectList){},
-            initiateTrade()
+            initiateTrade(){}
         }
     } 
 
