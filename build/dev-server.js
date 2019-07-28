@@ -64,6 +64,7 @@ var options = {
 if (context.length) {
     app.use(proxyMiddleware(context, options))
 }
+
 // handle fallback for HTML5 history API
 app.use(require('connect-history-api-fallback')())
 
@@ -77,6 +78,13 @@ app.use(hotMiddleware)
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
+
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false}))
+
+var chaincode = require('../chaincode/node')
+app.use('/chaincode', chaincode(config.dev.chaincodeEnv))
 
 var uri = 'http://localhost:' + port
 

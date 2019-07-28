@@ -86,10 +86,15 @@
                 }
             },
             async getTradeListData(){
-                tradeList = getTradeList(null, {
+                var tradeList = await getTradeList(null, {
                         page: this.currentPage,
                         pageSize: this.currentPageSize
                     })
+
+                if(!tradeList){
+                    return
+                }
+
 
                 this.tableData = [];
                 tradeList.forEach(item => {
@@ -114,15 +119,15 @@
                 this.getTradeListData()
             },
             expand(row, status){
-            	if (status) {
-	                this.tableData.splice(row.index, 1, {...row, ...{}});
-                    this.$nextTick(() => {
-                        this.expendRow.push(row.index);
-                    })
-	            }else{
-                    const index = this.expendRow.indexOf(row.index);
-                    this.expendRow.splice(index, 1)
-                }
+            	// if (status) {
+	            //     this.tableData.splice(row.index, 1, {...row, ...{}});
+                //     this.$nextTick(() => {
+                //         this.expendRow.push(row.index);
+                //     })
+	            // }else{
+                //     const index = this.expendRow.indexOf(row.index);
+                //     this.expendRow.splice(index, 1)
+                // }
             },
         }
     } 

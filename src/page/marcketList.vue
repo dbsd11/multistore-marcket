@@ -8,7 +8,7 @@
                 :expand-row-keys="expendRow"
                 :row-key="row=>row.index"
                 style="width:100%">
-                <el-table-column type="expand">
+                <!-- <el-table-column type="expand">
                     <template slot-scope="props">
                         <el-form label-position="left" inline>
                             <el-form-item label="集市名称">
@@ -34,11 +34,10 @@
                             </el-form-item>
                         </el-form>
                     </template>
-                </el-table-column>
+                </el-table-column> -->
                 
                 <el-table-column type="index" width="100"></el-table-column>
                 <el-table-column label="集市名称" prop="name"></el-table-column>
-                <el-table-column label="集市规模" prop="code"></el-table-column>
                 <el-table-column label="集市地址" prop="address"></el-table-column>
                 <el-table-column label="每日顾客量" prop="customerNum"></el-table-column>
                 <el-table-column label="每日交易量" prop="tradeAmount"></el-table-column>
@@ -92,10 +91,14 @@
             },
             async getMarchetList(){
                 try{
-                    marcketList = getMarcketList(null, {
+                    var marcketList = await getMarcketList(null, {
                         page: this.currentPage,
                         pageSize: this.currentPageSize
                     })
+
+                    if(!marcketList){
+                        return
+                    }
 
                     this.tableData = [];
                     marcketList.forEach(item => {

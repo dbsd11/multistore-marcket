@@ -1,6 +1,3 @@
-import { channelName, peerGrpcUrl, peerGrpcUrl2, orderrGrpcUrl } from '../config/env'
-
-
 'use strict';
 /*
 * Copyright IBM Corp All Rights Reserved
@@ -11,45 +8,18 @@ import { channelName, peerGrpcUrl, peerGrpcUrl2, orderrGrpcUrl } from '../config
  * Chaincode Invoke
  */
 
-var Fabric_Client = require('fabric-client');
-var path = require('path');
-var util = require('util');
-var os = require('os');
+var util = require('util')
 
-//
-var fabric_client = new Fabric_Client();
+process.on('unhandledRejection', error => {
+});
 
-// setup the fabric network
-var channel = fabric_client.newChannel(channelName);
-var peer = fabric_client.newPeer(peerGrpcUrl);
-channel.addPeer(peer);
-var order = fabric_client.newOrderer(orderrGrpcUrl)
-channel.addOrderer(order);
-
-//
-var member_user = null;
-var store_path = path.join(__dirname, 'hfc-key-store');
-var tx_id = null;
-
-// create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
-Fabric_Client.newDefaultKeyValueStore({ path: store_path
-}).then((state_store) => {
-	// assign the store to the fabric client
-	fabric_client.setStateStore(state_store);
-	var crypto_suite = Fabric_Client.newCryptoSuite();
-	// use the same location for the state store (where the users' certificate are kept)
-	// and the crypto store (where the users' keys are kept)
-	var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
-	crypto_suite.setCryptoKeyStore(crypto_store);
-	fabric_client.setCryptoSuite(crypto_suite);
-})
-
-async function invokeAsync(userId, chaincodeId, fcn, args){
-	return Promise.resolve(()=>{
-		var userFromStore = fabric_client.getUserContext(userId, true);
-		if (user_from_store && user_from_store.isEnrolled()) {
+exports.invokeAsync =  function (fabric_client, channel, userId, chaincodeId, fcn, args){
+	var tx_id = null;
+	return Promise.resolve((()=>{
+		return fabric_client.getUserContext(userId, true);
+	})()).then((userFromStore)=>{
+		if (userFromStore && userFromStore.isEnrolled()) {
 			console.log('Successfully loaded %s from persistence', userId);
-			member_user = user_from_store;
 		} else {
 			throw new Error('Failed to get %s .... run registerUser.js', userId);
 		}
@@ -72,7 +42,7 @@ async function invokeAsync(userId, chaincodeId, fcn, args){
 
 		// send the transaction proposal to the peers
 		return channel.sendTransactionProposal(request);
-	}).then((results) => {
+	}).then((results, reject) => {
 		var proposalResponses = results[0];
 		var proposal = results[1];
 		let isProposalGood = false;
@@ -106,13 +76,13 @@ async function invokeAsync(userId, chaincodeId, fcn, args){
 			// get an eventhub once the fabric client has a user assigned. The user
 			// is required bacause the event registration must be signed
 			let event_hub = fabric_client.newEventHub();
-			event_hub.setPeerAddr(peerGrpcUrl2);
+			event_hub.setPeerAddr(channel.getPeers()[0].getUrl().replace("7051", "7053"));
 	
 			// using resolve the promise so that result status may be processed
 			// under the then clause rather than having the catch clause process
 			// the status
 			let txPromise = new Promise((resolve, reject) => {
-				let handle = setTimeout(() => {
+				let handle = setTimeout(() => {console.info(1)
 					event_hub.disconnect();
 					resolve({event_status : 'TIMEOUT'}); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
 				}, 3000);
@@ -137,6 +107,8 @@ async function invokeAsync(userId, chaincodeId, fcn, args){
 					//this is the callback if something goes wrong with the event registration or processing
 					reject(new Error('There was a problem with the eventhub ::'+err));
 				});
+			}).catch((error)=>{
+				console.error("txPromise error:"+error)
 			});
 			promises.push(txPromise);
 	
@@ -156,15 +128,12 @@ async function invokeAsync(userId, chaincodeId, fcn, args){
 	
 		if(results && results[1] && results[1].event_status === 'VALID') {
 			console.log('Successfully committed the change to the ledger by the peer');
-			return results
+			return results.toString()
 		} else {
 			console.log('Transaction failed to be committed to the ledger due to ::'+results[1].event_status);
 		}
 	}).catch((err) => {
 		console.error('Failed to invoke successfully :: ' + err);
+		return JSON.stringify({"error": err.toString()})
 	});
-}
-
-module.exports = {
-	invokeAsync: invokeAsync
 }

@@ -119,7 +119,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
   tradeObj := Trade{}
 
-  json.Unmarshal([]byte(args[1]), tradeObj)
+  json.Unmarshal([]byte(args[1]), &tradeObj)
 
   //校验商品是否合法
   var goods Goods
@@ -130,7 +130,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
     goodsBytes, _ := APIstub.GetState(goodsId)
 
     goods = Goods{}
-    json.Unmarshal(goodsBytes, goods)
+    json.Unmarshal(goodsBytes, &goods)
   }
 
   //校验市场是否合法
@@ -142,7 +142,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
     marcketBytes, _ := APIstub.GetState(marcketId)
 
     marcket = Marcket{}
-    json.Unmarshal(marcketBytes, marcket)
+    json.Unmarshal(marcketBytes, &marcket)
   }
 
   //校验交易合法性

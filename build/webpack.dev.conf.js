@@ -67,11 +67,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       inject: true
     }),
 
-    new HtmlWebpackPlugin({
-      chunks:['chaincode'],
-      inject: true
-    }),
-
     new FriendlyErrorsPlugin(),
     
     // copy custom static assets

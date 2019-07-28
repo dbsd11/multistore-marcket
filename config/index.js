@@ -16,6 +16,14 @@ module.exports = {
         '/statis',
         '/img'
     ],
+    chaincodeEnv:{
+      channelName : 'mychannel',
+      peerGrpcUrl :'grpc://119.3.167.139:7051',
+      peerGrpcUrl2 : 'grpc://119.3.167.139:7053',
+      orderrGrpcUrl : 'grpc://119.3.167.139:7050',
+      caUrl : 'http://119.3.167.139:7054',
+      chainCodeId : "multistore-marcket"
+   },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

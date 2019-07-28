@@ -1,5 +1,4 @@
 import fetch from '@/config/fetch'
-// import { getGoodsListOnChain, getMarcketListOnChain, getTradeListOnChain, initiateTradeOnChain  } from '@/config/mychannel-v0'
 
 /**
  * 登陆
@@ -228,10 +227,10 @@ export const getAddressById = address_id => fetch('/v1/addresse/' + address_id);
 
 export const getUserCity = () => fetch('/v1/user/city/count');
 
-export const getGoodsList = (startId, page) => {}; //getGoodsListOnChain("admin@bison.group", startId, page);
+export const getGoodsList = (startId, page) => fetch('/chaincode/getGoodsListOnChain');
 
-export const getMarcketList = (startId, page) => {}; //getMarcketListOnChain("admin@bison.group", startId, page);
+export const getMarcketList = (startId, page) => fetch('/chaincode/getMarchetListOnChain');
 
-export const getTradeList = (startId, page) => {}; //getTradeListOnChain("admin@bison.group", startId, page);
+export const getTradeList = (startId, page) => fetch('/chaincode/getTradeListOnChain');
 
-export const initiateTrade = (tradeInfo) => {}; //initiateTradeOnChain("admin@bison.group", tradeInfo);
+export const initiateTrade = (tradeInfo) => fetch('/chaincode/initiateTradeOnChain', tradeInfo, 'POST'); 

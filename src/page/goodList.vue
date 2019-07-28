@@ -8,7 +8,7 @@
                 :expand-row-keys="expendRow"
                 :row-key="row=>row.index"
                 style="width:100%">
-                <el-table-column type="expand">
+                <!-- <el-table-column type="expand">
                     <template slot-scope="props">
                         <el-form label-position="left" inline>
                             <el-form-item label="商品名称">
@@ -40,7 +40,7 @@
                             </el-form-item>
                         </el-form>
                     </template>
-                </el-table-column>
+                </el-table-column> -->
                 
                 <el-table-column type="index" width="100"></el-table-column>
                 <el-table-column label="商品名称" prop="name"></el-table-column>
@@ -100,10 +100,14 @@
             },
             async getGoods(){
                 try{
-                    goodsList = getGoodsList(null, {
+                    var goodsList = await getGoodsList(null, {
                         page: this.currentPage,
                         pageSize: this.currentPageSize
                     })
+                        
+                    if(!goodsList){
+                        return
+                    }
 
                     this.tableData = [];
                     goodsList.forEach(item => {
