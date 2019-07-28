@@ -6,7 +6,7 @@
 					<el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
 					<el-menu-item index="initiateTrade"><i class="el-icon-plus"></i>发起交易</el-menu-item>
 					<el-submenu index="2">
-						<template slot="title"><i class="el-icon-info"></i>商品管理</template>
+						<template slot="title"><i class="el-icon-star-on"></i>商品管理</template>
 						<el-menu-item index="goodList">商品列表</el-menu-item>
 						<el-menu-item index="marcketList">集市列表</el-menu-item>
 					</el-submenu>

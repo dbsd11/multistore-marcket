@@ -65,9 +65,126 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
       SmallUrl: "http://www.baidu.com",
       Price: 100.0,
       MarcketName: "华北01",
-      Inventory: 100,
-      Tag: "",
+      Inventory: 10000,
+      Tag: "男士",
       Star: "4.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "拖鞋",
+      Code:"tx01",
+      Type:"鞋子",
+      SmallUrl: "http://www.baidu.com",
+      Price: 10.0,
+      MarcketName: "华北01",
+      Inventory: 100000,
+      Tag: "凉鞋、女士",
+      Star: "4.1",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "真皮手表",
+      Code:"watch01",
+      Type:"手表",
+      SmallUrl: "http://www.baidu.com",
+      Price: 1000.0,
+      MarcketName: "华北01",
+      Inventory: 100,
+      Tag: "真皮、手表",
+      Star: "4.5",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "糕点",
+      Code:"gd01",
+      Type:"食品",
+      SmallUrl: "http://www.baidu.com",
+      Price: 1.0,
+      MarcketName: "华北01",
+      Inventory: 100000,
+      Tag: "甜品",
+      Star: "4.9",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "钳子",
+      Code:"qz01",
+      Type:"工具",
+      SmallUrl: "http://www.baidu.com",
+      Price: 25.0,
+      MarcketName: "华南01",
+      Inventory: 3000,
+      Tag: "不锈钢",
+      Star: "3.9",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "沙发",
+      Code:"sf01",
+      Type:"家具",
+      SmallUrl: "http://www.baidu.com",
+      Price: 5000.0,
+      MarcketName: "华南01",
+      Inventory: 2800,
+      Tag: "舒适、懒人休息",
+      Star: "3.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "老铁SUV",
+      Code:"suv01",
+      Type:"汽车",
+      SmallUrl: "http://www.baidu.com",
+      Price: 100000.0,
+      MarcketName: "华南01",
+      Inventory: 10,
+      Tag: "省油",
+      Star: "4.6",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "凌美swift",
+      Code:"lm01",
+      Type:"办公用品",
+      SmallUrl: "http://www.baidu.com",
+      Price: 2.0,
+      MarcketName: "华东01",
+      Inventory: 80000,
+      Tag: "耐用",
+      Star: "4.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "茶杯",
+      Code:"cb01",
+      Type:"百货",
+      SmallUrl: "http://www.baidu.com",
+      Price: 8.0,
+      MarcketName: "华东01",
+      Inventory: 100,
+      Tag: "好看",
+      Star: "4.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "G"),
+      Name: "兄弟翡翠",
+      Code:"xd01",
+      Type:"珠宝",
+      SmallUrl: "http://www.baidu.com",
+      Price: 1000000.0,
+      MarcketName: "华西01",
+      Inventory: 1,
+      Tag: "翡翠、稀有",
+      Star: "5.0",
       CreateTime: time.Now(),
     },
   }
@@ -76,8 +193,41 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
     {
       Id: getAndIncrId(APIstub, "M"),
       Name: "华北01",
-      Code: "sc01",
-      Address: "",
+      Code: "scn01",
+      Address: "华北市场XX中心",
+      CustomerNum: 0,
+      TradeAmount: 0,
+      Tag: "",
+      Star: "4.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "M"),
+      Name: "华南01",
+      Code: "scs01",
+      Address: "华南市场xx坊",
+      CustomerNum: 0,
+      TradeAmount: 0,
+      Tag: "",
+      Star: "4.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "M"),
+      Name: "华东01",
+      Code: "sce01",
+      Address: "华东市场XX码头",
+      CustomerNum: 0,
+      TradeAmount: 0,
+      Tag: "",
+      Star: "4.0",
+      CreateTime: time.Now(),
+    },
+    {
+      Id: getAndIncrId(APIstub, "M"),
+      Name: "华西01",
+      Code: "scw01",
+      Address: "华西XX市场",
       CustomerNum: 0,
       TradeAmount: 0,
       Tag: "",
@@ -189,7 +339,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
       if strings.Compare(goodsThis.Id, goods.Id) == 0 {
         increasePrice := goodsThis.Price * (float64(100000 - goodsThis.Inventory) / 100000.0)
         goodsThis.Price += increasePrice
-        goodsThis.Price = strconv.ParseFloat(fmt.Sprintf("%.2f", goodsThis.Price), 64)
+        goodsThis.Price = float64Price(goodsThis.Price)
         APIstub.PutState(goodsThis.Id, Marshal(goodsThis))
         reduceTotalPrice = increasePrice * float64(goodsThis.Inventory);
         continue
@@ -202,7 +352,7 @@ func (s *SmartContract) initiateTrade(APIstub shim.ChaincodeStubInterface, args 
     }
     //2.下调库存量最大的商品价格
     maxInvetoryGoods.Price -= reduceTotalPrice / float64(maxInvetoryGoods.Inventory)
-    maxInvetoryGoods.Price = 
+    maxInvetoryGoods.Price = float64Price(maxInvetoryGoods.Price)
     APIstub.PutState(maxInvetoryGoods.Id, Marshal(maxInvetoryGoods))
   }).Catch(func(e try.E) {
     fmt.Println(e)
@@ -269,7 +419,7 @@ func (s *SmartContract) demoClean(APIstub shim.ChaincodeStubInterface, args []st
   if (len(args) == 0) {
     return shim.Error("Denied")
   }
-  if (strings.Compare(args[0], string(time.Now().Unix() / 60)) != 0) {
+  if (strings.Compare(args[0], strconv.Itoa(int(time.Now().Unix() / 60))) != 0) {
     return shim.Error("Denied")
   }
 
@@ -319,8 +469,8 @@ func Marshal(v interface{}) []byte {
 }
 
 func float64Price(price float64) float64 {
-  if priceFloat64, error:= strconv.ParseFloat(fmt.Sprintf("%.2f", maxInvetoryGoods.Price), 64);error != nil{
-    return nil
+  if priceFloat64, error:= strconv.ParseFloat(fmt.Sprintf("%.2f", price), 64);error != nil{
+    return float64(0)
   } else {
     return priceFloat64
   }

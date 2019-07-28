@@ -60,11 +60,13 @@ module.exports = (env) => {
     })
     api.post('/initiateTradeOnChain', (req, res) => {
         invokeAsync(fabric_client, channel, "admin@bison.group", chainCodeId, "initiateTrade", [new Date().getTime().toString(), JSON.stringify(req.body)]).then((result)=> {
-            console.info("bbbb")
             res.json(JSON.parse(result));
         })
-
-        console.info("aaaa")
+    })
+    api.post('/demoClean', (req, res) => {
+        invokeAsync(fabric_client, channel, "admin@bison.group", chainCodeId, "demoClean", ["12345678", req.query["key"]]).then((result)=> {
+            res.json(JSON.parse(result));
+        })
     })
 
 	return api;
