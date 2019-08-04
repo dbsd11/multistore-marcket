@@ -65,6 +65,12 @@ if (context.length) {
     app.use(proxyMiddleware(context, options))
 }
 
+app.use(proxyMiddleware(['/email'], {
+    target: 'http://www.baidu.com',
+    changeOrigin: true
+}))
+
+
 // handle fallback for HTML5 history API
 app.use(require('connect-history-api-fallback')())
 

@@ -11,6 +11,7 @@
 var util = require('util')
 
 process.on('unhandledRejection', error => {
+	console.info(error)
 });
 
 exports.invokeAsync =  function (fabric_client, channel, userId, chaincodeId, fcn, args){
@@ -70,7 +71,7 @@ exports.invokeAsync =  function (fabric_client, channel, userId, chaincodeId, fc
 			var transaction_id_string = tx_id.getTransactionID(); //Get the transaction ID string to be used by the event processing
 			var promises = [];
 	
-			var sendPromise = channel.sendTransaction(request);
+			var sendPromise = channel.sendTransaction(request)
 			promises.push(sendPromise); //we want the send transaction first, so that we know where to check status
 	
 			// get an eventhub once the fabric client has a user assigned. The user
@@ -128,7 +129,7 @@ exports.invokeAsync =  function (fabric_client, channel, userId, chaincodeId, fc
 	
 		if(results && results[1] && results[1].event_status === 'VALID') {
 			console.log('Successfully committed the change to the ledger by the peer');
-			return results.toString()
+			return JSON.stringify(results[0])
 		} else {
 			console.log('Transaction failed to be committed to the ledger due to ::'+results[1].event_status);
 		}

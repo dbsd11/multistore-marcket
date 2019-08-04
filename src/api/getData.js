@@ -234,3 +234,8 @@ export const getMarcketList = (startId, page) => fetch('/chaincode/getMarchetLis
 export const getTradeList = (startId, page) => fetch('/chaincode/getTradeListOnChain');
 
 export const initiateTrade = (tradeInfo) => fetch('/chaincode/initiateTradeOnChain', tradeInfo, 'POST'); 
+
+/**
+ * 通知反馈意见
+ */
+export const sendEmail = (emailData) => fetch('/email', emailData, 'POST'); 

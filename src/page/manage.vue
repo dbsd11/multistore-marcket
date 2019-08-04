@@ -14,10 +14,7 @@
 						<template slot="title"><i class="el-icon-document"></i>交易</template>
 						<el-menu-item index="tradeList">交易记录</el-menu-item>
 					</el-submenu>
-					<el-submenu index="7">
-						<template slot="title"><i class="el-icon-warning"></i>说明</template>
-						<el-menu-item index="explain">商品市场价格信息工具，仅作为兴趣参考</el-menu-item>
-					</el-submenu>
+					<el-menu-item index="explain"><i class="el-icon-warning"></i>说明</el-menu-item>
 				</el-menu>
 			</el-col>
 			<el-col :span="20" style="height: 100%;overflow: auto;">

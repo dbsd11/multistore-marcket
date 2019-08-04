@@ -11,6 +11,9 @@
                 <el-table-column type="expand">
                     <template slot-scope="props">
                         <el-form label-position="left" inline>
+                            <el-form-item label="交易ID">
+                                <span>{{ props.row.tradeId }}</span>
+                            </el-form-item>
                             <el-form-item label="商品名称">
                                 <span>{{ props.row.goodsName }}</span>
                             </el-form-item>
@@ -26,9 +29,12 @@
                             <el-form-item label="交易价格">
                                 <span>{{ props.row.tradePrice }}</span>
                             </el-form-item>
-                            <el-form-item label="交易时间">
+                            <el-form-item label="交易发起时间">
                                 <span>{{ props.row.tradeTime }}</span>
-                            </el-form-item> 
+                            </el-form-item>
+                            <el-form-item label="交易成功时间">
+                                <span>{{ props.row.createTime }}</span>
+                            </el-form-item>  
                         </el-form>
                     </template>
                 </el-table-column>
@@ -95,19 +101,26 @@
                     return
                 }
 
+                tradeList = tradeList.sort((trade1, trade2) => {
+                    return trade1["Id"]>trade2["Id"]?-1:1
+                })
 
                 this.tableData = [];
                 tradeList.forEach(item => {
                     const tradeItem = {
+                        tradeId: item.Id,
                         goodsName: item.goodsName,
                         goodsCode: item.goodsCode,
                         marcketName: item.marcketName,
                         customerNo: item.customerNo,
                         tradePrice: item.tradePrice,
-                        tradeTime: item.tradeTime
+                        tradeTime: new Date(item.tradeTime).toLocaleString(),
+                        createTime: new Date(item.createTime).toLocaleString()
                     }
                     this.tableData.push(tradeItem)
                 })
+
+                this.count = tradeList.length
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);

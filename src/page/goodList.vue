@@ -124,6 +124,8 @@
                         }
                         this.tableData.push(goodsItem)
                     })
+
+                    this.count = goodsList.length
                 }catch(err){
                     console.log('获取数据失败', err);
                 }

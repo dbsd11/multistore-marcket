@@ -37,7 +37,7 @@
                 <el-dialog title="确定发起交易" v-model="dialogFormVisible">
                         <div slot="footer" class="dialog-footer">
                           <el-button @click="dialogFormVisible = false">取 消</el-button>
-                          <el-button type="primary" @click="initiateTradeData">提 交</el-button>
+                          <el-button type="primary" @click="initiateTradeData" :loading="submitInitiating">提 交</el-button>
                         </div>
                     </el-dialog>
               </el-dialog>
@@ -68,7 +68,8 @@
                     value:'scn01'
                 }],
                 allSelectList:[],
-                dialogFormVisible:false
+                dialogFormVisible:false,
+                submitInitiating: false
             }
         },
         components:{
@@ -88,12 +89,14 @@
             },
             async initiateTradeData(){
                 try{
+                    this.submitInitiating = true
+
                     var tradeResult = await initiateTrade({
                         customerNo: this.customerNo,
                         goodsName: this.selectGoods.filter(select => select.value==this.goodsCode)[0].label,
                         goodsCode: this.goodsCode,
                         marcketName: this.selectMarckets.filter(select => select.value==this.marcketCode)[0].label,
-                        tradeTime: this.getCurDateStr('yyyy-MM-dd HH:mm:ss')
+                        tradeTime: new Date().toISOString()
                     })
                         
                     if(!tradeResult || tradeResult.error){
@@ -115,32 +118,11 @@
                         type: 'error',
                         message: '发起交易失败, 请联系系统管理员'
                     });
+                }finally{
+                    this.submitInitiating=false
                 }
             },
 
-            getCurDateStr(fmt){
-                var date = new Date()
-                var o = {
-                    "M+": date.getMonth() + 1, //月份 
-                    "d+": date.getDate(), //日 
-                    "H+": date.getHours(), //小时 
-                    "m+": date.getMinutes(), //分 
-                    "s+": date.getSeconds(), //秒 
-                    "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
-                    "S": date.getMilliseconds() //毫秒 
-                };
-
-                if (/(y+)/.test(fmt)) {
-                    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
-                }
-                for (var k in o){
-                    if (new RegExp("(" + k + ")").test(fmt)){
-                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-                    }
-                }
-                
-                return fmt
-            },
             randomString(len) {
             　　len = len || 32;
             　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/

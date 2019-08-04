@@ -5,89 +5,102 @@
 			<header class="section_title">数据统计</header>
 			<el-row :gutter="20" style="margin-bottom: 10px;">
                 <el-col :span="4"><div class="data_list today_head"><span class="data_num head">当日数据：</span></div></el-col>
-				<el-col :span="4"><div class="data_list"><span class="data_num">{{userCount}}</span> 新增用户</div></el-col>
-				<el-col :span="4"><div class="data_list"><span class="data_num">{{orderCount}}</span> 新增订单</div></el-col>
-                <el-col :span="4"><div class="data_list"><span class="data_num">{{adminCount}}</span> 新增管理员</div></el-col>
+				<el-col :span="4"><div class="data_list"><span class="data_num">{{tradeAmount}}</span> 交易量(元)</div></el-col>
+				<el-col :span="4"><div class="data_list"><span class="data_num">{{tradeCount}}</span> 交易数</div></el-col>
+                <el-col :span="4"><div class="data_list"><span class="data_num">{{tradeCustomerCount}}</span> 客户数</div></el-col>
 			</el-row>
             <el-row :gutter="20">
                 <el-col :span="4"><div class="data_list all_head"><span class="data_num head">总数据：</span></div></el-col>
-                <el-col :span="4"><div class="data_list"><span class="data_num">{{allUserCount}}</span> 注册用户</div></el-col>
-                <el-col :span="4"><div class="data_list"><span class="data_num">{{allOrderCount}}</span> 订单</div></el-col>
-                <el-col :span="4"><div class="data_list"><span class="data_num">{{allAdminCount}}</span> 管理员</div></el-col>
+                <el-col :span="4"><div class="data_list"><span class="data_num">{{totalTradeAmount}}</span>交易量(元)</div></el-col>
+				<el-col :span="4"><div class="data_list"><span class="data_num">{{totalTradeCount}}</span>交易数</div></el-col>
+				<el-col :span="4"><div class="data_list"><span class="data_num">{{totalGoodsCount}}</span>商品数量</div></el-col>
+                <el-col :span="4"><div class="data_list"><span class="data_num">{{totalMarcketsCount}}</span>交易市场数量</div></el-col>
+
             </el-row>
 		</section>
-		<tendency :sevenDate='sevenDate' :sevenDay='sevenDay'></tendency>
     </div>
 </template>
 
 <script>
 	import headTop from '../components/headTop'
-	import tendency from '../components/tendency' 
-	import dtime from 'time-formater'
-	import {userCount, orderCount, getUserCount, getOrderCount, adminDayCount, adminCount} from '@/api/getData'
+	import { getGoodsList, getMarcketList , getTradeList } from '@/api/getData'
     export default {
     	data(){
     		return {
-    			userCount: null,
-    			orderCount: null,
-                adminCount: null,
-                allUserCount: null,
-                allOrderCount: null,
-                allAdminCount: null,
-    			sevenDay: [],
-    			sevenDate: [[],[],[]],
+				tradeAmount: 0.00,
+				tradeCount: 0,
+				tradeCustomerCount: 0,
+				totalTradeAmount: 0.00,
+				totalTradeCount: 0,
+				totalGoodsCount: 0,
+				totalMarcketsCount: 0
     		}
     	},
     	components: {
     		headTop,
-    		tendency,
     	},
     	mounted(){
     		this.initData();
-    		for (let i = 6; i > -1; i--) {
-    			const date = dtime(new Date().getTime() - 86400000*i).format('YYYY-MM-DD')
-    			this.sevenDay.push(date)
-    		}
-    		this.getSevenData();
     	},
         computed: {
 
         },
     	methods: {
     		async initData(){
-    			const today = dtime().format('YYYY-MM-DD')
-    			Promise.all([userCount(today), orderCount(today), adminDayCount(today), getUserCount(), getOrderCount(), adminCount()])
-    			.then(res => {
-    				this.userCount = res[0].count;
-    				this.orderCount = res[1].count;
-                    this.adminCount = res[2].count;
-                    this.allUserCount = res[3].count;
-                    this.allOrderCount = res[4].count;
-                    this.allAdminCount = res[5].count;
-    			}).catch(err => {
-    				console.log(err)
-    			})
-    		},
-    		async getSevenData(){
-    			const apiArr = [[],[],[]];
-    			this.sevenDay.forEach(item => {
-    				apiArr[0].push(userCount(item))
-    				apiArr[1].push(orderCount(item))
-                    apiArr[2].push(adminDayCount(item))
-    			})
-    			const promiseArr = [...apiArr[0], ...apiArr[1], ...apiArr[2]]
-    			Promise.all(promiseArr).then(res => {
-    				const resArr = [[],[],[]];
-					res.forEach((item, index) => {
-						if (item.status == 1) {
-							resArr[Math.floor(index/7)].push(item.count)
+				try{
+					var goodList = await getGoodsList();
+					var marcketsList = await getMarcketList();
+					var tradeList = await getTradeList();
+
+					this.totalGoodsCount = goodList.length
+					this.totalMarcketsCount = marcketsList.length
+					this.totalTradeCount = tradeList.length
+
+					this.totalTradeAmount = 0.00
+					tradeList.forEach(trade => {
+						this.totalTradeAmount += parseFloat(trade["tradePrice"])
+					});
+
+					this.tradeAmount = 0.00
+					this.tradeCount = 0
+					this.tradeCustomerCount = 0
+					var customerNos = []
+					tradeList.filter(trade => trade["tradeTime"].startsWith(this.getCurDateStr('yyyy-MM-dd'))).forEach(trade => {
+						this.tradeAmount += parseFloat(trade["tradePrice"])
+						this.tradeCount += 1
+						if(!(trade["customerNo"] in customerNos)){
+							this.tradeCustomerCount += 1
+							customerNos.push(trade["customerNo"])
 						}
 					})
-					this.sevenDate = resArr;
-    			}).catch(err => {
-    				console.log(err)
-    			})
-    		}
+				}catch(err){
+					console.info("获取统计数据失败:"+err)
+				}				
+			},
+			
+			getCurDateStr(fmt){
+                var date = new Date()
+                var o = {
+                    "M+": date.getMonth() + 1, //月份 
+                    "d+": date.getDate(), //日 
+                    "H+": date.getHours(), //小时 
+                    "m+": date.getMinutes(), //分 
+                    "s+": date.getSeconds(), //秒 
+                    "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+                    "S": date.getMilliseconds() //毫秒 
+                };
+
+                if (/(y+)/.test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+                }
+                for (var k in o){
+                    if (new RegExp("(" + k + ")").test(fmt)){
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    }
+                }
+                
+                return fmt
+            },
     	}
     }
 </script>

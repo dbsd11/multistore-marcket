@@ -11,6 +11,7 @@ const goodList = r => require.ensure([], () => r(require('@/page/goodList')), 'g
 const marcketList = r => require.ensure([], () => r(require('@/page/marcketList')), 'marcketList');
 const tradeList = r => require.ensure([], () => r(require('@/page/tradeList')), 'tradeList');
 const initiateTrade = r => require.ensure([], () => r(require('@/page/initiateTrade')), 'initiateTrade');
+const explain = r => require.ensure([], () => r(require('@/page/explain')), 'explain');
 
 export default new Router({
   routes: [
@@ -21,7 +22,7 @@ export default new Router({
     },
     {
       path: '/',
-      component: login
+      component: manage
     },
     {
       path: '/index',
@@ -34,31 +35,31 @@ export default new Router({
         {
           path: '',
           component: home,
-          meta: [],
+          meta: ["首页"],
         },
         {
           path: '/goodList',
           component: goodList,
-          meta: [],
+          meta: ["商品管理", "商品列表"],
         },
         {
           path: '/marcketList',
           component: marcketList,
-          meta: [],
+          meta: ["商品管理", "集市列表"],
         },
         {
           path: '/tradeList',
           component: tradeList,
-          meta: [],
+          meta: ["交易", "交易记录"],
         },
         {
           path: '/initiateTrade',
           component: initiateTrade,
-          meta: [],
+          meta: ["发起交易"],
         },{
           path: '/explain',
-          component: "简单兴趣学习",
-          meta: [],
+          component: explain,
+          meta: ["说明"],
         }
       ]
     }
