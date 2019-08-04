@@ -21,17 +21,14 @@ const actions = {
 		try{
 			const res = await getAdminInfo()
 			if (res.status == 1) {
-				adminInfo = res.data;
-
-				<script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
-				adminInfo.userIp = returnCitySN["cip"];
-
+				var adminInfo = res.data;
+				adminInfo.user_ip = returnCitySN["cip"];
 				commit('saveAdminInfo', adminInfo);
 			}else{
 				throw new Error(res.type)
 			}
 		}catch(err){
-			// console.log(err.message)
+			console.log(err.message)
 		}
 	}
 }

@@ -65,9 +65,14 @@ if (context.length) {
     app.use(proxyMiddleware(context, options))
 }
 
-app.use(proxyMiddleware(['/email'], {
+app.use(proxyMiddleware(['/email'],{
     target: 'http://www.baidu.com',
-    changeOrigin: true
+    changeOrigin: true,
+    logLevel: 'debug',
+    selfHandleResponse: true,
+    onProxyReq:(proxyReq, req) => {
+      req.pipe(process.stdout)
+    }
 }))
 
 
