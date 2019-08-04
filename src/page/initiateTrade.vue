@@ -49,7 +49,7 @@
 
 <script>
     import headTop from '../components/headTop'
-    import { initiateTrade } from '@/api/getData'
+    import { initiateTrade, getGoodsList, getMarcketList } from '@/api/getData'
 
     export default{
         data(){
@@ -81,6 +81,32 @@
         methods: {
             async initData(){
                 this.customerNo = "rand"+this.randomString(10)
+
+                try{
+                    var goodsList = await getGoodsList()
+
+                    var toSelectGoods = []
+                    goodsList.forEach(goods=>{
+                        toSelectGoods.push({
+                            label: goods["name"],
+                            value: goods["code"]
+                        })
+                    })
+
+                    var marcketList = await getMarcketList()
+                    var toSelectMarckets = []
+                    marcketList.forEach(marcket=>{
+                        toSelectMarckets.push({
+                            label: marcket["name"],
+                            value: marcket["code"]
+                        })
+                    })
+                    
+                    this.selectGoods = toSelectGoods
+                    this.selectMarckets = toSelectMarckets
+                }catch(err){
+                    console.log('初始化数据失败', err);
+                }
             },
             async getSelectGoods(goodsNameOrCodeLike){},
             selectGoodsFilter(queryString, allSelectList){
